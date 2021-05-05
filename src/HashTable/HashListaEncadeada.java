@@ -1,5 +1,4 @@
 package HashTable;
-import javax.swing.*;
 import java.util.*;
 
 public class HashListaEncadeada<Key, Value>{
@@ -20,18 +19,6 @@ public class HashListaEncadeada<Key, Value>{
         lista = (ListaEncadeada<Key,Value>[]) new ListaEncadeada[M] ;
         for (int i = 0; i < M; i++)
             lista[i] = new ListaEncadeada<Key, Value>();
-    }
-
-    /**
-     * Calcula o Hash
-     * @param key
-     * @return
-     */
-
-
-    //Função que faz o hash Auxiliar em caso de colisão
-    private int hashAux(Key key){
-        return 1 + ((key.hashCode() & 0x7fffffff) % M-1);
     }
 
     //Retorna o hash entre 0 e M-1.
@@ -69,13 +56,17 @@ public class HashListaEncadeada<Key, Value>{
     public boolean contains(Key key){
         return get(key) != null;
     }
-
+/*
+ * QUEST�O 1 E
+ */
     public Value get(Key key){
         int i = hash(key);
         return lista[i].get(key);
     }
 
-
+/*
+ * QUEST�O 1 B TRATANDO COLIS�ES CRIANDO NA POSI��O QUANDO HOUVER COLIS�O
+ */
     public void put(Key key, Value val) {
        if (val == null){
            delete(key);
@@ -90,15 +81,19 @@ public class HashListaEncadeada<Key, Value>{
        if (!lista[i].contains(key)){
            N++;
        }
-       //Chama o método put da lista encadeada que irá inserir o chave valor em um nó da lista encadeada, assim quando houver colisão
-        // Será criado mais um nó nessa posição.
-        //Pois cada posição da nossa tabela corresponde a uma lista Encadeada.
+       /*Chama o metodo put da lista encadeada que ira� inserir o chave valor em um no da lista encadeada, assim quando houver colisao
+        * Sera� criado mais um no nessa posicao.
+        * Pois cada posicao da nossa tabela corresponde a uma lista Encadeada.
+        *
+        */
        lista[i].put(key, val);
     }
 
-
-    //Mesmo procedimento da inserção
-    //Porém, aqui utilizamos o método delete da lista Encadeda para deletar um nó dessa lista.
+/*
+ * QUESTAO 1 LETRA C
+ */
+    //Mesmo procedimento da insercao
+    //Porem, aqui utilizamos o metodo delete da lista Encadeda para deletar um no dessa lista.
     public void delete(Key key)
     {
         if (key == null)
@@ -125,7 +120,9 @@ public class HashListaEncadeada<Key, Value>{
         return queue;
     }
     //Iteramos pela lista encadeada e retornamos uma LinkedList de chaves da nossa Lista Encadeada
-    
+    /*
+     * QUEST�O 1 D 
+     */
     public int retornaKeys(){
         Queue<Key> queue = new LinkedList<Key>();
         for (int i=0; i<M;i++){

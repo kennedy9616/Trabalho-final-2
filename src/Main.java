@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 import HashTable.*;
 import RB.*;
 import BTree.*;
@@ -14,27 +14,27 @@ import BTree.*;
 public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
-        RBTree rb = new RBTree();
-        BTree bin = new BTree();
-        HashTentativaLinear tab = new HashTentativaLinear(1000);
-        HashListaEncadeada tab2 = new HashListaEncadeada(1000);
+        RBTree<String, Double> rb = new RBTree<String, Double>();
+        BTree<String, Double> bin = new BTree<String, Double>();
+        HashTentativaLinear<String, Double> TabelaLinear = new HashTentativaLinear<String, Double>(1000);
+        HashListaEncadeada<String, Double> TabelaEncadeada = new HashListaEncadeada<String, Double>(1000);
         
-        if(lerArquivoHashTentativaLinear(tab, 1000)){
-            String aux = "njrrgxtshbbuzawcotwn";
-            Object valor = tab.get(aux);
+        if(lerArquivoHashTentativaLinear(TabelaLinear, 1000)){
+            String key = "njrrgxtshbbuzawcotwn";
+            Object valor = TabelaLinear.get(key);
 
-            System.out.println("Hash Tentativa Linear - Valor associado a "+aux+": " + valor);
+            System.out.println("Hash Tentativa Linear - chave: "+key+": valor: " + valor);
             
-            System.out.println("Quantidade: "+tab.retornaKeys()+"\n");
+            System.out.println("Quantidade de chaves: "+TabelaLinear.retornaKeys()+"\n");
         }
         
-        if(lerArquivoHashListaEncadeada(tab2, 1000)){
-            String aux = "knaftehjulupjslbdhsl";
-            Object valor = tab2.get(aux);
+        if(lerArquivoHashListaEncadeada(TabelaEncadeada, 1000)){
+            String key = "knaftehjulupjslbdhsl";
+            Object valor = TabelaEncadeada.get(key );
 
-            System.out.println("Hash Lista Encadeada - Valor associado a "+aux+": " + valor);
+            System.out.println("Hash Lista Encadeada - chave: "+key +": valor: " + valor);
             
-            System.out.println("Quantidade: "+tab2.retornaKeys()+"\n");
+            System.out.println("Quantidade de chaves: "+TabelaEncadeada.retornaKeys()+"\n");
         }
         
         if(lerArquivoRBTree(rb)){
@@ -57,17 +57,22 @@ public class Main {
                 System.out.println("Arvore Binaria está Nao balanceada");
         }  
     }
-    
-    public static boolean lerArquivoRBTree(RBTree rb) throws FileNotFoundException{
+    /*Leitura de Arquivos 
+     * Hash Tentativa Linear
+     * Hash Lista Encadeada
+     * BTree
+     * RBTree
+     */
+    public static boolean lerArquivoRBTree(RBTree<String, Double> rb) throws FileNotFoundException{
         int count = 0;
         
-        File arquivo = new File("Tabela_RBTree.txt"); //selecione o arquivo string_double de tamanho qualquer
+        File arquivo = new File("Tabela_RBTree.txt");
         
         if(arquivo.exists()){   
             if(arquivo.canRead()){
                 try{
                     Scanner input = new Scanner(arquivo).useDelimiter("\\,|\\r\\n");
-                    while (input.hasNext() && count<100) {//lendo atributos do arquivo
+                    while (input.hasNext() && count<100) {
                         String chave = input.next();
                         double valor = Double.parseDouble(input.next());
                         rb.inserir(chave, valor);
@@ -90,13 +95,13 @@ public class Main {
     public static boolean lerArquivoBinaryTree(BTree bin) throws FileNotFoundException{
         int count = 0;
         
-        File arquivo = new File("Tabela_BTree.txt"); //selecione o arquivo string_double de tamanho qualquer
+        File arquivo = new File("Tabela_BTree.txt"); 
         
         if(arquivo.exists()){   
             if(arquivo.canRead()){
                 try{
                     Scanner input = new Scanner(arquivo).useDelimiter("\\,|\\r\\n");
-                    while (input.hasNext() && count<100) {//lendo atributos do arquivo
+                    while (input.hasNext() && count<100) {
                         String chave = input.next();
                         double valor = Double.parseDouble(input.next());
                         bin.inserir(chave, valor);
@@ -119,13 +124,13 @@ public class Main {
     public static boolean lerArquivoHashTentativaLinear(HashTentativaLinear tab, int tam) throws FileNotFoundException{
         int count = 0;
         
-        File arquivo = new File("Tabela_String_Double.txt"); //selecione o arquivo string_double de tamanho qualquer
+        File arquivo = new File("Tabela_String_Double.txt"); 
         
         if(arquivo.exists()){   
             if(arquivo.canRead()){
                 try{
                     Scanner input = new Scanner(arquivo).useDelimiter("\\,|\\r\\n");
-                    while (input.hasNext() && count<tam) {//lendo atributos do arquivo
+                    while (input.hasNext() && count<tam) {
                         String chave = input.next();
                         double valor = Double.parseDouble(input.next());
                         tab.putDoubleHash(chave, valor);
@@ -148,13 +153,13 @@ public class Main {
     public static boolean lerArquivoHashListaEncadeada(HashListaEncadeada list, int tam) throws FileNotFoundException{
         int count = 0;
         
-        File arquivo = new File("Tabela_String_Double.txt"); //selecione o arquivo string_double de tamanho qualquer
+        File arquivo = new File("Tabela_String_Double.txt"); 
         
         if(arquivo.exists()){   
             if(arquivo.canRead()){
                 try{
                     Scanner input = new Scanner(arquivo).useDelimiter("\\,|\\r\\n");
-                    while (input.hasNext() && count<tam) {//lendo atributos do arquivo
+                    while (input.hasNext() && count<tam) {
                         String chave = input.next();
                         double valor = Double.parseDouble(input.next());
                         list.put(chave, valor);
