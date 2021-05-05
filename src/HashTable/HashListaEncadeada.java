@@ -5,8 +5,9 @@ import java.util.*;
 public class HashListaEncadeada<Key, Value>{
     private int N; // numero de pares de chaves na tabela
     private int M = 16; // Tamanho da tabela hash com tratamento linear
-    private ListaEncadeada<Key, Value>[] lista;
+    private ListaEncadeada<Key, Value>[] lista; // Lista encadeada de pares Chave, Valor
 
+    //Cria uma lista encadeada de tamanho variavel, com o tamanho passado por parametro
     public HashListaEncadeada(int capacidade) {
         this.M = capacidade;
        lista = (ListaEncadeada<Key,Value>[]) new ListaEncadeada[M] ;
@@ -14,6 +15,7 @@ public class HashListaEncadeada<Key, Value>{
            lista[i] = new ListaEncadeada<Key, Value>();
     }
 
+    //Cria uma lista encadeada de tamanho inicial 16
     public HashListaEncadeada() {
         lista = (ListaEncadeada<Key,Value>[]) new ListaEncadeada[M] ;
         for (int i = 0; i < M; i++)
@@ -42,7 +44,7 @@ public class HashListaEncadeada<Key, Value>{
      * Redimensiona a tabela de acordo com a quantidade de chaves.
      * @param
      */
-
+    //Redimenciona a tabela para um novo tamanho, recolocando os elementos na nova tabela
     private void resize(int nos) {
         HashListaEncadeada<Key, Value> temp;
         temp = new HashListaEncadeada<Key, Value>(nos);
@@ -73,6 +75,7 @@ public class HashListaEncadeada<Key, Value>{
         return lista[i].get(key);
     }
 
+
     public void put(Key key, Value val) {
        if (val == null){
            delete(key);
@@ -87,11 +90,15 @@ public class HashListaEncadeada<Key, Value>{
        if (!lista[i].contains(key)){
            N++;
        }
+       //Chama o método put da lista encadeada que irá inserir o chave valor em um nó da lista encadeada, assim quando houver colisão
+        // Será criado mais um nó nessa posição.
+        //Pois cada posição da nossa tabela corresponde a uma lista Encadeada.
        lista[i].put(key, val);
     }
 
 
-
+    //Mesmo procedimento da inserção
+    //Porém, aqui utilizamos o método delete da lista Encadeda para deletar um nó dessa lista.
     public void delete(Key key)
     {
         if (key == null)
@@ -108,6 +115,7 @@ public class HashListaEncadeada<Key, Value>{
         }
     }
 
+    //Iteramos pela lista encadeada e retornamos uma LinkedList de chaves da nossa Lista Encadeada
     public Iterable<Key> keys(){
         Queue<Key> queue = new LinkedList<Key>();
         for (int i=0; i<M;i++){
