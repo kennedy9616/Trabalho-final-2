@@ -5,9 +5,9 @@ import java.util.Queue;
 
 public class ListaEncadeada<Key, Value> {
     private int n; // Quantidade de pares(valor-chave)
-    private Node primeiro; // Primeiro nó da lista
+    private Node primeiro; // Primeiro no da lista
 
-    //Estrutura de um nó da lista encadeada.
+    //Estrutura de um no da lista encadeada.
     private class Node{
         private Key key;
         private Value value;

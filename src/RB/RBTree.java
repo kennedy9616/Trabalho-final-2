@@ -1,221 +1,252 @@
 package RB;
-import AVL.*;
 
 public class RBTree<Key extends Comparable<Key>, Value>
 {	
-	
-	protected static final boolean RED = true;
-    protected static final boolean BLACK = false;
-	double QuantBlack = 0, QuantRed = 0;	// Contadores da quantidade de nós pretos e de nós vermelhos
+	    protected static final boolean RED = true;
+	    protected static final boolean BLACK = false;
+	    private double quantidadeBlack = 0; // Contadores da quantidade de n�s pretos e de n�s vermelhos
+	    private double quantidadeRed = 0;	
 
-    protected class Node {
-        public Key chave;
-        public Value valor;
-        public Node esq, dir;
-        boolean cor;
-        int size;
+	    public class Node {
+	        public Key chave;
+	        public Value valor;
+	        public Node noEsquerda;
+	        public Node noDireita;
+	        public Node pai;
+	        boolean cor;
+	        int size;
 
+	        Node(){
+	            noEsquerda = null;
+	            noDireita = null;
+	            pai = null;
+	            cor = BLACK;
+	        }
+	        
+	        Node(Key key, Value value){
+	            this.chave = key;
+	            this.valor = value;
+	            this.noEsquerda = null;
+	            this.noDireita = null;
+	            this.pai = null;
+	            this.cor = BLACK;
+	        }
+	    }
 
-        Node(Key key, Value value, int size, boolean color) {
-            this.chave = key;
-            this.valor = value;
+	    protected Node raiz, nulo;
+	    
+	    public RBTree(){
+	        nulo = new Node();
+	        raiz = nulo;
+	    }
 
-            this.size = size;
-            this.cor = color;
-        }
-    }
+	    //Rota��o a Esquerda em um n� 'no'
+	    //O filho noDireitaeito de 'no' sobe
+	    // e 'no'	 se torna filho dele
+	    // como um filho a Esquerda
+	    private void rotacaoEsquerda(Node node) {
+	        Node novaRaiz = node.noDireita;
+	        node.noDireita = novaRaiz.noEsquerda;
+	        
+	        if(novaRaiz.noEsquerda != nulo)
+	            novaRaiz.noEsquerda.pai = node;
+	        
+	        novaRaiz.pai = node.pai;
+	        
+	        if (node.pai == nulo)
+	            raiz = novaRaiz;
+	        else{
+	            if(node == node.pai.noEsquerda)
+	                node.pai.noEsquerda = novaRaiz;
+	            else
+	                node.pai.noDireita = novaRaiz;
+	        }
+	        
+	        novaRaiz.noEsquerda = node; 
+	        node.pai = novaRaiz;
+	    }
 
-    protected Node raiz;
+	    //O mesmo do acima, por�m invertendo Esquerda por Direita
+	    // Assim as trocas s�o feitas a Direita
+	    private void rotacaoDireita(Node node) { 
+	        Node novaRaiz = node.noEsquerda;
+	        node.noEsquerda = novaRaiz.noDireita;
+	        
+	        if(novaRaiz.noDireita != nulo)
+	            novaRaiz.noDireita.pai = node;
+	        
+	        novaRaiz.pai = node.pai;
+	        if(node.pai == nulo)
+	            raiz = novaRaiz;
+	        else{
+	            if (node == node.pai.noEsquerda)
+	                node.pai.noEsquerda = novaRaiz;
+	            else
+	                node.pai.noDireita = novaRaiz;
+	        }
+	        
+	        novaRaiz.noDireita = node;
+	        node.pai = novaRaiz;
+	    }
+	    
+	    public void inserir(Key key, Value val){
+	        Node ant = nulo, p = raiz;
+	        while(p != nulo){
+	            ant = p;
+	            int cmp = key.compareTo(p.chave);
+	            if (cmp < 0) 
+	                p = p.noEsquerda;
+	            else
+	                p = p.noDireita;
+	        }
+	        
+	        Node novo = new Node(key, val);
+	        novo.pai = ant;
+	        novo.noEsquerda = novo.noDireita = nulo;
+	        novo.cor = RED;
+	        
+	        if (raiz == nulo){
+	            raiz = novo;
+	        }else{
+	            int cmp = key.compareTo(ant.chave);
+	            if (cmp < 0)
+	                ant.noEsquerda = novo;
+	            else
+	                ant.noDireita = novo;     
+	        }
+	        
+	        restaurarPropriedadesRB(novo);    
+	    }
+	    
+	    public void restaurarPropriedadesRB(Node node){
+	        Node novo;
+	        
+	        while(node.pai.cor == RED){
+	            if(node.pai == node.pai.pai.noEsquerda){
+	                novo = node.pai.pai.noDireita; 
 
-	private boolean isRed(Node h) {
-		if(h == null){
-			return false;
-		}
-		return h.cor == RED;
-	}
-	
-	private boolean isBlack(Node h) {
-		// Implementar método que verifica se o nó é preto
-		if(h == null){
-			return true;
-		}
-		return h.cor == BLACK;
-	}
-	
-	 public int size() {
-        return size(raiz);
-    }
+	                if(novo.cor == RED){ // caso 1: node tem um tio novo vermelho
+	                    novo.cor = BLACK;
+	                    node.pai.cor = BLACK;
+	                    node.pai.pai.cor = RED;
+	                    node = node.pai.pai;
+	                }else{
+	                    if(node == node.pai.noDireita){ // caso 2: x tem um tio preto e x � filho direito
+	                        node = node.pai;
+	                        rotacaoEsquerda(node);   
+	                    }
 
-    protected int size(Node no) {
-        if (no == null) {
-            return 0;
-        }
+	                    node.pai.cor = BLACK; // caso 3: 
+	                    node.pai.pai.cor = RED;
+	                    rotacaoDireita(node.pai.pai);
+	                }
+	            }else{
+	                novo = node.pai.pai.noEsquerda;
+	                
+	                if(novo.cor == RED){ // caso 1: espelhamento
+	                    novo.cor = BLACK;
+	                    node.pai.cor = BLACK;
+	                    node.pai.pai.cor = RED;
+	                    node = node.pai.pai;
+	                }else{
+	                    if(node == node.pai.noEsquerda){ // caso 2: espelhamento
+	                        node = node.pai;
+	                        rotacaoDireita(node);
+	                    }
+	                    node.pai.cor = BLACK; // caso 3: espelhamento
+	                    node.pai.pai.cor = RED;
+	                    rotacaoEsquerda(node.pai.pai);
+	                }
+	            }
+	        }
+	        raiz.cor = BLACK;
+	    }
+	    
+	    public void mostrar(){
+	        inOrdem(raiz, "   ");
+	    }
+	    
+	    public void inOrdem(Node node, String str){
+	        if(node != nulo){
+	            inOrdem(node.noEsquerda, "   "+str);
+	            System.out.println(str+node.chave);
+	            inOrdem(node.noDireita, "   "+str);
+	        }
+	    }
+	    
+	    //Invoca a fun��o de contar a quantidade de n�s pretos e vermelhos e calcula a porcentagem
+	    //Depois zera os valores da quantidade de n�s pretos e vermelhos para um futura contagem.
+	    public double percentualRED(){
+	        contaBlackRed(raiz);
+	        
+	        double percentualRED = ((this.quantidadeRed/(this.quantidadeBlack+this.quantidadeRed)))*100;
 
-        return no.size;
-    }
+	        this.quantidadeRed = 0;
+	        this.quantidadeBlack = 0;
 
-    public boolean isEmpty() {
-        return size(raiz) == 0;
-    }
+	        return percentualRED;
+	    }
+	    
+	    public void contaBlackRed(Node node){
+	        if(node != nulo){
+	            contaBlackRed(node.noEsquerda);
+	            if(node.cor == RED)
+	                this.quantidadeRed++;
+	            else
+	                this.quantidadeBlack++;
+	            contaBlackRed(node.noDireita);
+	        }
+	    }
 
+	    private Value buscaValor(Node no, Key key){
+	        if(key.compareTo(no.chave) == 0) return no.valor;
 
-    //Rotação a esquerda em um nó 'no'
-	//O filho direito de 'no' sobe
-	// e 'no'	 se torna filho dele
-	// como um filho a esquerda
-	 protected Node rotacaoEsquerda(Node no) {
-        if (no == null || no.dir == null) {
-            return no;
-        }
+	        if(key.compareTo(no.chave)<0) 
+	            return buscaValor(no.noEsquerda, key);
+	        else 
+	            return buscaValor(no.noDireita,key);
+	    }
 
-        Node novaRaiz = no.dir;
+	    public Value buscaValor(Key key){
+	        Node no = raiz;
+	        Value valor = buscaValor(no, key);
+	        return valor;
+	    }
+	    
+	    public int altura() {
+	        return altura(raiz);
+	    }
 
-        no.dir = novaRaiz.esq;
-        novaRaiz.esq = no;
+	    private int altura(Node no) {
+	        if (no != null) {
+	            int he, hd;
+	            he=altura(no.noEsquerda);
+	            hd=altura(no.noDireita);
+	            
+	            if(he > hd) return he + 1;
+	            else return hd + 1;
+	        }
 
-        novaRaiz.cor = no.cor;
-        novaRaiz.cor = RED;
+	        return 0;
+	    }
+	    
+	    public boolean balanceada(){
+	        return balanceada(raiz);
+	    }
 
-        novaRaiz.size = no.size;
-        novaRaiz.size = size(no.esq) + 1 + size(no.dir);
-
-        return novaRaiz;
-    }
-
-	/**
-	 * Implementar o esse método
-	 * @param h
-	 * @return
-	 */
-	//O mesmo do acima, porém invertendo esquerda por direita
-	// Assim as trocas são feitas a direita
-	private Node rotacaoDireita(Node h) {
-		// Implementar método que aplica a rotação à direita.
-		if (h == null || h.dir == null) {
-			return h;
-		}
-
-		Node novaRaiz = h.esq;
-
-		h.esq = novaRaiz.dir;
-		novaRaiz.dir = h;
-
-		novaRaiz.cor = h.cor;
-		h.cor = RED;
-
-		novaRaiz.size = h.size;
-		novaRaiz.size = size(h.esq) + 1 + size(h.dir);
-
-		return novaRaiz;
-
-	}
-
-	//Faz com que o nó fique vermelho e seus dois filhos fiquem pretos
-	private void trocaCor(Node h) {
-		// Implementar método que troca as cores.
-		h.cor = RED;
-		h.esq.cor = BLACK;
-		h.dir.cor = BLACK;
-	}
-	
-	
-	/**
-	 * Insere um novo nó
-	 * @param key
-	 * @param val
-	 */
-
-
-	public void inserir(Key key, Value val){ 
-		raiz = inserir(raiz, key, val);
-		raiz.cor = BLACK;
-	}
-
-	private Node inserir(Node h, Key key, Value val)
-	{
-		if (h == null) // Do standard insert, with red link to parent.
-			return new Node(key, val, 1, RED);
-		
-		int cmp = key.compareTo(h.chave);
-		if (cmp < 0) 
-			h.esq = inserir(h.esq, key, val);
-		else if (cmp > 0) 
-			h.dir = inserir(h.dir, key, val);
-		else h.valor = val;
-		
-		if (isRed(h.dir) && !isRed(h.esq))	//Inserir um nó em um nó simples de modo há arvore ter um lado com menos nós pretos que outro
-			h = rotacaoEsquerda(h);
-		if (isRed(h.esq) && isRed(h.esq.esq)) // Inserir de forma a ter 2 nós vermelhos seguidos
-			h = rotacaoDireita(h);
-		if (isRed(h.esq) && isRed(h.dir)) // Caso os dois filhos sejam vermelhos recolorir
-			trocaCor(h);
-		
-		h.size = size(h.esq) + size(h.dir) + 1;
-		return h;
-	}
-
-
-	//Perccore a arvore rubro negra contando a quantidade de nós pretos e de nós vermelhos
-	private void percorrer(Node h){
-		if(isRed(h)){
-			QuantRed++;
-		}else{
-			QuantBlack++;
-		}
-
-		if(h.esq != null)
-			percorrer(h.esq);
-		if(h.dir !=null)
-			percorrer(h.dir);
-	}
-
-	//Invoca a função de contar a quantidade de nós pretos e vermelhos e calcula a porcentagem
-	//Depois zera os valores da quantidade de nós pretos e vermelhos para um futura contagem.
-	public double PercentRed(){
-		if (raiz == null){
-			return 0;
-		}
-		percorrer(raiz);
-		double PercentualRed = ((QuantRed/(QuantBlack+QuantRed)))*100;
-
-		QuantRed = 0;
-		QuantBlack = 0;
-
-		return PercentualRed;
-	}
-
-	//Percorre recursivamente cada nó da arvore RB e insere eles em uma arvore AVL
-	private void InserirAVL(Node no, AVLTree avlTree){
-		avlTree.put(no.chave, no.valor);
-		if(no.esq != null)
-			InserirAVL(no.esq, avlTree);
-		if(no.dir != null)
-			InserirAVL(no.dir,avlTree);
-	}
-
-	//Cria uma arvore avl e invoca o método InserirAVL que percorre arvore RB apartir de um nó passando a raiz da arvoreRB
-	public AVLTree GetAVL(){
-		AVLTree avlTree = new AVLTree();
-		InserirAVL(raiz, avlTree);
-		return avlTree;
-	}
-
-
-	private Value percorrer2(Node no, Key key){
-		if(key.compareTo(no.chave) == 0){
-			return no.valor;
-		}
-		if(key.compareTo(no.chave)<0)
-			return percorrer2(no.esq, key);
-		else{
-			return percorrer2(no.dir,key);
-		}
-	}
-
-	public Value getValue(Key key){
-		Node no = raiz;
-		Value valor = percorrer2(no, key);
-		return valor;
-	}
-
+	    private boolean balanceada(Node node) {
+	        int hd, he;
+	        if (node != null) {
+	            if(!balanceada(node.noEsquerda)) return false;
+	            if(!balanceada(node.noDireita)) return false;
+	            
+	            hd = altura(node.noDireita);
+	            he = altura(node.noEsquerda);
+	            
+	            if((he - hd)<-1 || 1<(he - hd)){
+	                return false;
+	            }
+	        }
+	        return true;
+	    }
 }

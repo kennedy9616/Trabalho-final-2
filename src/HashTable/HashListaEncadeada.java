@@ -124,6 +124,15 @@ public class HashListaEncadeada<Key, Value>{
         }
         return queue;
     }
-
+    //Iteramos pela lista encadeada e retornamos uma LinkedList de chaves da nossa Lista Encadeada
+    
+    public int retornaKeys(){
+        Queue<Key> queue = new LinkedList<Key>();
+        for (int i=0; i<M;i++){
+            for(Key key : lista[i].keys())
+                ((LinkedList<Key>) queue).add(key);
+        }
+        return queue.size();
+    }
 
 }

@@ -28,19 +28,7 @@ public class HashTentativaLinear<Key, Value>{
 		stats = new boolean[cap];
 		M = cap;
 	}
-	// contar a quantidade de chaves do hash
-	public int contaKey(Key[] key) {
-		int numKey = 0;
-		LinkedList<Key> cont = new LinkedList<Key>();
-		
-		for(int i=0; i<key.length; i++) {
-			cont.add((Key) key);
-		}
-		for(int i = 0; i < cont.size();i++){
-			numKey++;
-		}
-		return numKey;
-	}
+	
 	/**
 	 * Calcula o Hash
 	 * @param key
@@ -107,7 +95,7 @@ public class HashTentativaLinear<Key, Value>{
 		//Em caso de colisão a proxima posição testa é a (i + k) % M onde k é o valor da hash auxiliar
 
         for (; keys[i] != null; i = (i + k) % M) {
-            if (keys[i].equals(key)) {            // Caso a chave já esteja na tabela o valor é sobrescrito
+            if (keys[i].equals(key)) {            // Caso a chave ja� esteja na tabela o valor eh sobrescrito
                 vals[i] = val;
                 return;
             }
@@ -122,7 +110,7 @@ public class HashTentativaLinear<Key, Value>{
 
 	//Insere um elemtno na tabela utilizando uma hash simples e tentativa linear. Se a posição que a hash cair estiver ocupada
 	//Passa para posição i+1 %M, utilizando o resto para o valor não sair do tamanho da tabela;
-	//Se a chave  já existir na tabela o valor é sobrescrito.
+	//Se a chave  ja existir na tabela o valor e sobrescrito.
 
 	public void put(Key key, Value val) {
 		int i;
@@ -148,7 +136,7 @@ public class HashTentativaLinear<Key, Value>{
 	 * @param key
 	 */
 
-	//Executa a remoção sem deletar o elemento da memória
+	//Executa a remocao sem deletar o elemento da memória
 	//Caso o elemento esteja contido na tabela, calculcamos a sua posição nos pares de chaves e alteramos seus estado para false, ou seja Livre.
 	public void deleteNoRemove(Key key){
 		if (key == null)
@@ -178,12 +166,12 @@ public class HashTentativaLinear<Key, Value>{
 
 		//decrementamos o contador de pares.
 		N--;
-		//Verificamos se existe necessidade de redimensionameto após a remoção da chave.
+		//Verificamos se existe necessidade de redimensionameto apos a remocao da chave.
 		if (N > 0 && N == M/8)
 			resize(M/2);
 	}
 
-	//Faz a remoção fisica do elemento atribuindo null para chave e valor
+	//Faz a remocao fisica do elemento atribuindo null para chave e valor
 	public void delete(Key key)
 	{
 		if (key == null) 
@@ -237,4 +225,8 @@ public class HashTentativaLinear<Key, Value>{
             }
 		return null;
 	}
+	
+    public int retornaKeys(){
+        return this.N;
+    }
 }
